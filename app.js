@@ -1,35 +1,8 @@
-// var express = require('express');
-// var router = express.Router();
-
-// router.get('/', function (req, res, next) {
-//     var mysql = require('mysql');//导入mysql依赖包
-//     var client = mysql.createConnection({
-//         "host": "localhost",
-//         "port": "3306",
-//         "user": 'root',
-//         "password": 'zq19950402!',
-//         "database": 'app1',
-//     });
-
-//     var table = 't_stu';
-//     client.query('select * from ' + table, function (errs, results) {
-//         if (errs) {
-//             throw errs;
-//         }
-//         if (results) {
-//             console.log(results);
-//         }
-//     });
-//     res.render('index', { title: 'Express' });
-// });
-
-// module.exports = router;
-
 
 var express = require('express');
 var app = express();
-
 var mysql = require('mysql');
+
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -40,25 +13,56 @@ var connection = mysql.createConnection({
 
 connection.connect();
 
-var table = 't_stu';
-var table1 = 'information';
-connection.query('select * from ' + table1, function (errs, results) {
-    if (errs) throw errs;
-    if (results) {
-        console.log('results', results);
-    }
+
+app.get('/', function (req, res) {
+    res.sendfile(__dirname + "/" + "index.html");
 });
 
-connection.end();
+
+//实现登录验证功能
+app.get('/login', function (req, res) {
+    var name = req.query.name;
+    var pwd = req.query.pwd;
+
+    var selectSQL = "select * from information where useName = '" + name + "' and password = '" + pwd + "'";
+    connection.query(selectSQL, function (err, res) {
+        if (err) throw err;
+        console.log(res);
+        console.log('OK');
+        res.sendfile(__dirname + "/" + "OK.html");
+    })
+})
+
+app.get('/register.html', function (req, res) {
+    res.sendfile(__dirname + "/" + "register.html");
+});
 
 
-// var express = require('express');
-// var app = express();
+//实现注册功能
+app.get('/register', function (req, res) {
+    var name = req.query.name;
+    var pwd = req.query.pwd;
+    var user = { useName: name, password: pwd };
+    connection.query('insert into information set ?', user, function (err, res) {
+        if (err) throw err;
+        console.log('ok');
+        res.sendfile(__dirname + "/" + "index.html");
+    })
+})
 
-// app.get('/', function (req, res) {
-//     res.send('Hello World!');
+// var table = 't_stu';
+// var table1 = 'information';
+// connection.query('select * from ' + table1, function (errs, results) {
+//     if (errs) throw errs;
+//     if (results) {
+//         console.log('results', results);
+//     }
 // });
 
-// app.listen(3000, function () {
-//     console.log('Example app listening on port 3000!');
-// });
+
+
+var server = app.listen(7744, function () {
+    console.log("start");
+})
+
+//connection.end();
