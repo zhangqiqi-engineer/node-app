@@ -25,9 +25,9 @@ app.get('/login', function (req, res) {
     var pwd = req.query.pwd;
 
     var selectSQL = "select * from information where useName = '" + name + "' and password = '" + pwd + "'";
-    connection.query(selectSQL, function (err, res) {
+    connection.query(selectSQL, function (err, rs) {
         if (err) throw err;
-        console.log(res);
+        console.log(rs);
         console.log('OK');
         res.sendfile(__dirname + "/" + "OK.html");
     })
@@ -43,7 +43,7 @@ app.get('/register', function (req, res) {
     var name = req.query.name;
     var pwd = req.query.pwd;
     var user = { useName: name, password: pwd };
-    connection.query('insert into information set ?', user, function (err, res) {
+    connection.query('insert into information set ?', user, function (err, rs) {
         if (err) throw err;
         console.log('ok');
         res.sendfile(__dirname + "/" + "index.html");
@@ -65,4 +65,4 @@ var server = app.listen(7744, function () {
     console.log("start");
 })
 
-//connection.end();
+// connection.end();
