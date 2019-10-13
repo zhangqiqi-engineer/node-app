@@ -2,6 +2,7 @@
 var express = require('express');
 var app = express();
 var mysql = require('mysql');
+var md5 = require('md5');
 
 var connection = mysql.createConnection({
     host: 'localhost',
@@ -22,12 +23,12 @@ app.get('/', function (req, res) {
 //实现登录验证功能
 app.get('/login', function (req, res) {
     var name = req.query.name;
-    var pwd = req.query.pwd;
-
+    var pwd = md5(req.query.pwd);
+    console.log('pwd', pwd);
     var selectSQL = "select * from information where useName = '" + name + "' and password = '" + pwd + "'";
     connection.query(selectSQL, function (err, rs) {
         if (err) throw err;
-        console.log(rs);
+        console.log('登陆', rs);
         console.log('OK');
         res.sendfile(__dirname + "/" + "OK.html");
     })
@@ -41,7 +42,7 @@ app.get('/register.html', function (req, res) {
 //实现注册功能
 app.get('/register', function (req, res) {
     var name = req.query.name;
-    var pwd = req.query.pwd;
+    var pwd = md5(req.query.pwd);
     var user = { useName: name, password: pwd };
     connection.query('insert into information set ?', user, function (err, rs) {
         if (err) throw err;
